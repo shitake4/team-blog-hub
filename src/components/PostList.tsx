@@ -6,7 +6,6 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { PostItem } from "@src/types";
 import {
   getFaviconSrcFromOrigin,
-  getMemberPath,
   getMemberById,
 } from "@src/utils/helper";
 
@@ -21,10 +20,9 @@ const PostLink: React.FC<{ item: PostItem }> = (props) => {
 
   return (
     <article className="post-link">
-      <Link href={getMemberPath(member.id)} passHref>
+      <Link href={link} >
         <a className="post-link__author">
           <div className="post-link__author-name">
-            {/*<div className="post-link__author-name">{member.name}</div>*/}
             <time dateTime={isoDate} className="post-link__date">
               {dayjs(isoDate).fromNow()}
             </time>
