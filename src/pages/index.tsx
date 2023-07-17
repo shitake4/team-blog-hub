@@ -1,6 +1,5 @@
 import { NextPage, GetStaticProps } from "next";
 import { FaTwitter, FaGithub } from "react-icons/fa";
-import { AiOutlineLink } from "react-icons/ai";
 
 import { members } from "@members";
 import { PostItem, Member } from "@src/types";
