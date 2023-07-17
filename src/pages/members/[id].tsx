@@ -12,6 +12,7 @@ import {
   getMemberPostsById,
   getMemberPath,
 } from "@src/utils/helper";
+import {config} from "@site.config";
 
 type Props = {
   postItems: PostItem[];
@@ -31,7 +32,12 @@ const Page: NextPage<Props> = (props) => {
 
   return (
     <>
-      <PageSEO title={name} path={getMemberPath(id)} />
+      <PageSEO
+          title={config.siteMeta.title}
+          description={config.siteMeta.description}
+          path="/"
+          removeSiteNameFromTitle={true}
+      />
       <section className="member">
         <ContentWrapper>
           <header className="member-header">
