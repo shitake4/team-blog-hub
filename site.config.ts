@@ -10,12 +10,8 @@ export const config = {
       : "http://localhost:3000",
   headerLinks: [
     {
-      title: "Company",
-      href: "https://zenn.dev/catnose99/articles/cb72a73368a547756862",
-    },
-    {
-      title: "GitHub",
-      href: "https://github.com/catnose99/team-blog-hub",
+      title: "Contact",
+      href: "https://forms.gle/nrXyTGFiD1ApmUAu7",
     },
   ],
 };
