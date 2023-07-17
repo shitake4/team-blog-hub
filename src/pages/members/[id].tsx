@@ -10,7 +10,6 @@ import { PageSEO } from "@src/components/PageSEO";
 import {
   getMemberById,
   getMemberPostsById,
-  getMemberPath,
 } from "@src/utils/helper";
 import {config} from "@site.config";
 
@@ -96,7 +95,7 @@ const Page: NextPage<Props> = (props) => {
 };
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
-  const id = params?.id as string;
+  const id = members[0].id;
   const member = getMemberById(id);
   const postItems = getMemberPostsById(id);
 
