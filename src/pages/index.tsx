@@ -74,14 +74,6 @@ const Page: NextPage<Props> = (props) => {
                   />
                 </a>
               )}
-              {websiteUrl && (
-                <a href={websiteUrl} className="member-header__link">
-                  <AiOutlineLink
-                    className="member-header__link-icon"
-                    aria-label={`Link to website`}
-                  />
-                </a>
-              )}
             </div>
           </header>
 
