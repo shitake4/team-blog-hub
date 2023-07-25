@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import Parser from "rss-parser";
-import { members } from "../../members";
-import { PostItem, Member } from "../types";
+import {Author, PostItem, Rss, WebService} from "../types";
+import {author} from "../../author";
 
 type FeedItem = {
   title: string;
@@ -13,79 +13,78 @@ type FeedItem = {
 
 function isValidUrl(str: string): boolean {
   try {
-    const { protocol } = new URL(str);
+    const {protocol} = new URL(str);
     return protocol === "http:" || protocol === "https:";
   } catch {
     return false;
   }
 }
 
+function filterRssWebServices(webServices: WebService[]): Rss[] {
+  return webServices
+      .reduce((result: Rss[], service: WebService) => {
+        if (service.rss) return [...result, service.rss]
+        return result;
+      }, [])
+}
+
 const parser = new Parser();
 let allPostItems: PostItem[] = [];
 
-async function fetchFeedItems(url: string) {
-  const feed = await parser.parseURL(url);
+async function fetchFeedItems(source: Rss) {
+  const feed = await parser.parseURL(source.url);
   if (!feed?.items?.length) return [];
 
   // return item which has title and link
-  return feed.items
-    .map(({ title, contentSnippet, link, isoDate }) => {
-      return {
-        title,
-        contentSnippet: contentSnippet?.replace(/\n/g, ""),
-        link,
-        isoDate,
-        dateMiliSeconds: isoDate ? new Date(isoDate).getTime() : 0,
-      };
-    })
-    .filter(
-      ({ title, link }) => title && link && isValidUrl(link)
-    ) as FeedItem[];
+  return feed
+      .items
+      .map(({title, contentSnippet, link, isoDate}) => {
+        return {
+          title,
+          contentSnippet: contentSnippet?.replace(/\n/g, ""),
+          link,
+          isoDate,
+          dateMiliSeconds: isoDate ? new Date(isoDate).getTime() : 0,
+        } as FeedItem;
+      })
+      .filter(({title, link}) => title && link && isValidUrl(link))
+      .filter((item) => {
+        if (source.includeUrlRegex) return item.link.match(new RegExp(source.includeUrlRegex))
+        return true;
+      })
+      .filter((item) => {
+        if (source.excludeUrlRegex) return !item.link.match(new RegExp(source.excludeUrlRegex))
+        return true;
+      })
 }
 
-async function getFeedItemsFromSources(sources: undefined | string[]) {
-  if (!sources?.length) return [];
+async function getFeedItemsFrom(sources: Rss[]) {
   let feedItems: FeedItem[] = [];
-  for (const url of sources) {
-    const items = await fetchFeedItems(url);
+  for (const source of sources) {
+    const items = await fetchFeedItems(source);
     if (items) feedItems = [...feedItems, ...items];
   }
   return feedItems;
 }
 
-async function getMemberFeedItems(member: Member): Promise<PostItem[]> {
-  const { id, sources, name, includeUrlRegex, excludeUrlRegex } = member;
-  const feedItems = await getFeedItemsFromSources(sources);
+async function getMemberFeedItems(author: Author): Promise<PostItem[]> {
+  const {authorId, webServices, name} = author;
+  const rss = filterRssWebServices(webServices)
+  const feedItems = await getFeedItemsFrom(rss);
   if (!feedItems) return [];
 
-  let postItems = feedItems.map((item) => {
+  return feedItems.map((item) => {
     return {
       ...item,
       authorName: name,
-      authorId: id,
+      authorId: authorId,
     };
   });
-  // remove items which not matches includeUrlRegex
-  if (includeUrlRegex) {
-    postItems = postItems.filter((item) => {
-      return item.link.match(new RegExp(includeUrlRegex));
-    });
-  }
-  // remove items which matches excludeUrlRegex
-  if (excludeUrlRegex) {
-    postItems = postItems.filter((item) => {
-      return !item.link.match(new RegExp(excludeUrlRegex));
-    });
-  }
-
-  return postItems;
 }
 
 (async function () {
-  for (const member of members) {
-    const items = await getMemberFeedItems(member);
-    if (items) allPostItems = [...allPostItems, ...items];
-  }
+  const items = await getMemberFeedItems(author);
+  if (items) allPostItems = [...allPostItems, ...items];
   allPostItems.sort((a, b) => b.dateMiliSeconds - a.dateMiliSeconds);
   fs.ensureDirSync(".contents");
   fs.writeJsonSync(".contents/posts.json", allPostItems);

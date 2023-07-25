@@ -1,17 +1,14 @@
-# Team Blog Hub
+# My Post Hub
+![GitHub package.json version (branch)](https://img.shields.io/github/package-json/v/shitake4/shitake4.github.io/main)
+![john_doe-Post-Hub](https://github.com/shitake4/my-post-hub/assets/8196476/9e55b413-b553-4639-8ebe-2e85486aec85)
 
-![Demo](https://user-images.githubusercontent.com/34590683/96832331-8c289400-1479-11eb-9466-f24d30860a24.png)
+Zenn、Qiita、Medium、note、はてなブログなどに投稿した記事を一覧にまとめて表示します。  
+ポートフォリオサイトとして使うことができます。
 
-企業/チームのためのブログ・スターターです。Forkしてご自由にお使いください。
+こちらをForkして、作成しました。
 
-ブログのRSSのURLを登録することで、チームメンバーの投稿を一覧にまとめて表示します。Zenn、Qiita、Medium、note、はてなブログなど、RSSフィードを取得できるサイトであれば、メンバーは好きな場所に投稿できます。
-
-詳しくは下記の記事をご覧ください。
-
-[チーム個々人のテックブログをRSSで集約するサイトを作った →](https://zenn.dev/catnose99/articles/cb72a73368a547756862)
-
-## Demo
-https://team-blog-hub.vercel.app
+- [チーム個々人のテックブログをRSSで集約するサイトを作った →](https://zenn.dev/catnose99/articles/cb72a73368a547756862)
+- [catnose99/team-blog-hub: RSS based blog starter kit for teams](https://github.com/catnose99/team-blog-hub)
 
 ## Development
 ```bash
@@ -20,15 +17,25 @@ $ yarn build
 $ yarn dev
 ```
 
-- サイトの基本設定は`site.config.ts`で行います。
-- メンバーのプロフィールやRSSの登録は`members.ts`で行います。
-- 配色を変更するには`src/styles/variables.scss`を書き換えます。
-- ロゴなどの画像を変更するには`public`内のファイルを置き換えます。
+## Usage
 
-その他、ご自由にコードを書き換えてください。
+以下より、RSSフィードを提供しています。
+- https://{domain}/feed.xml
+- https://{domain}/feed.json
+- https://{domain}/atom.xml
 
-## Deployment
-VercelやNetlifyにデプロイすることを推奨します。`yarn build`を実行することで、RSSからの投稿データの取得とサイトのビルドが行われます。1日に1回などの頻度で自動デプロイするのが良いかもしれません。
+
+### SNSを表示する
+- `author.ts` に追加することでプロフィール下のSNSサイトへのアイコンリンクが表示されます。
+```ts
+export const author: Author = {
+...
+  webServices: [
+    {name: 'github', userName: "shitake4", url: 'https://github.com/shitake4'},
+...
+```
+![john_doe-Post-Hub (1)](https://github.com/shitake4/my-post-hub/assets/8196476/d3a36eaa-81f7-445c-ae99-a143056f66e9)
+
 
 ## Licence
-MIT
+- MIT
